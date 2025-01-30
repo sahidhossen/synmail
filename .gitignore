@@ -1,0 +1,12 @@
+/bin
+__debug_bin**
+.env
+/.idea
+build/
+reports
+.DS_Store
+/vendor
+cover.html
+storage
+docker_files/data
+.vscode

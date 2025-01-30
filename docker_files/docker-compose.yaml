@@ -1,0 +1,43 @@
+name: "synmail"
+services:
+  # app:
+  #   container_name: synmail-backend
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ..
+  #   restart: always
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - volksbyte
+  #   ports:
+  #     - "9000:8080"
+  postgres:
+    image: postgres:15
+    container_name: synmail-postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - synmail
+    env_file:
+      - ../.env
+
+  adminer:
+    command: php -S 0.0.0.0:8080 -t /var/www/html
+    image: adminer
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - synmail
+    ports:
+      - 8080:8080
+volumes:
+  postgres_data:
+
+networks:
+  synmail:
+    name: synmail
