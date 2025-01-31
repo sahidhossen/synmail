@@ -6,9 +6,50 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"github.com/sahidhossen/synmail/src/middleware"
 	"github.com/sahidhossen/synmail/src/models"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func (h *GinHandler) Login(c *gin.Context) {
+	var reqBody *models.LoginRequest
+
+	if err := c.Bind(&reqBody); err != nil {
+		ResponseWithError(c, http.StatusBadRequest, "Password missing!")
+		return
+	}
+
+	if reqBody.EmailID == "" && reqBody.UserName == "" {
+		ResponseWithError(c, http.StatusBadRequest, "EmailID or userName required!")
+		return
+	}
+
+	user, err := h.DBService.GetUserByEmailOrUserName(reqBody)
+	if err != nil {
+		log.Err(err).Msg("Internal query error")
+		ResponseWithError(c, http.StatusInternalServerError, "Internal query error!")
+		return
+	}
+	if user == nil {
+		ResponseNotFound(c, "Authentication credential incorrect!")
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(reqBody.Password))
+	if err != nil {
+		ResponseWithError(c, http.StatusNotAcceptable, "Please type correct password")
+		return
+	}
+	claimData := middleware.UserClaim{UserID: user.ID, EmailID: user.EmailID}
+
+	token, err := middleware.CreateClaim(h.Config.Secret, "synUser", claimData)
+	if err != nil {
+		ResponseWithError(c, http.StatusBadRequest, "Internal error when creating claim!")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": token})
+
+}
 
 func (h *GinHandler) RegisterUser(c *gin.Context) {
 	user := &models.User{}
@@ -50,5 +91,11 @@ func (h *GinHandler) GetUser(c *gin.Context) {
 		ResponseNotFound(c, "User not found!")
 		return
 	}
+	Response(c, http.StatusOK, "success", "User details", user)
+}
+
+func (h *GinHandler) UserInfo(c *gin.Context) {
+	header := middleware.GetAuth(c)
+	user, _ := h.DBService.GetUserByID(header.UserID)
 	Response(c, http.StatusOK, "success", "User details", user)
 }

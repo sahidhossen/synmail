@@ -16,3 +16,21 @@ func (s *SynMailServices) GetUserByID(id uint) (*models.User, error) {
 	}
 	return &user, nil
 }
+
+func (s *SynMailServices) GetUserByEmailOrUserName(loginData *models.LoginRequest) (*models.User, error) {
+	var user models.User
+
+	where := map[string]interface{}{}
+	if loginData.EmailID != "" {
+		where["email_id"] = loginData.EmailID
+	}
+
+	if loginData.UserName != "" {
+		where["user_name"] = loginData.UserName
+	}
+
+	if err := s.DB.Where(where).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

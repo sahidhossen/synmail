@@ -11,6 +11,12 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type LoginRequest struct {
+	UserName string `json:"userName"`
+	EmailID  string `json:"emailId"`
+	Password string `json:"password" binding:"required"`
+}
+
 func (c *User) TableName() string {
 	return "users"
 }
