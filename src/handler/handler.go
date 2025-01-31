@@ -5,16 +5,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sahidhossen/synmail/src/config"
-	service "github.com/sahidhossen/synmail/src/service/email"
+	"github.com/sahidhossen/synmail/src/email"
 )
 
 type GinHandler struct {
 	*config.Config
-	EmailClient *service.EmailClient
+	EmailService *email.EmailService
 }
 
-func CreateHandler(cfg *config.Config, emailClient *service.EmailClient) *GinHandler {
-	return &GinHandler{Config: cfg, EmailClient: emailClient}
+func CreateHandler(cfg *config.Config, emailClient *email.EmailService) *GinHandler {
+	return &GinHandler{Config: cfg, EmailService: emailClient}
 }
 
 func (h *GinHandler) Ping(c *gin.Context) {

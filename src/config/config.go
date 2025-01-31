@@ -21,6 +21,8 @@ type Config struct {
 	MailPass                 string `envconfig:"MAIL_PASSWORD" required:"true"`
 	MailFrom                 string `envconfig:"MAIL_FROM_ADDRESS" required:"true"`
 	MailFromName             string `envconfig:"MAIL_FROM_NAME" required:"true"`
+	MailAPIKey               string `envconfig:"MAIL_API_KEY"`
+	MailGunDomain            string `envconfig:"MAIL_GUN_DOMAIN"`
 }
 
 func LoadConfig() (*Config, error) {
