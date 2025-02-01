@@ -10,8 +10,12 @@ func Migrate(db *gorm.DB) {
 	err := db.AutoMigrate(
 		&models.User{},
 		&models.Campaign{},
-		&models.Subscribe{},
+		&models.Template{},
+		&models.Subscriber{},
+		&models.SubscribeTopics{},
+		&models.SubscribeTopicMap{},
 		&models.Trackers{},
+		&models.Unsubscribers{},
 	)
 	if err != nil {
 		panic("Migration failed: " + err.Error())

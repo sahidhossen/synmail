@@ -1,20 +1,34 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+type Role string
+
+const (
+	ADMIN Role = "admin"
+	USER  Role = "user"
+)
 
 type User struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	UserName  string    `json:"userName" binding:"required" gorm:"size:100;unique"`
-	EmailID   string    `json:"emailId" binding:"required,email" gorm:"size:100;unique"`
-	Password  string    `json:"password,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	gorm.Model
+	ID        uint `gorm:"primaryKey"`
+	Name      string
+	UserName  string `binding:"required" gorm:"size:100;unique"`
+	EmailID   string `binding:"required,email" gorm:"size:100;unique"`
+	Password  string
+	Role      string    `gorm:"default:'user'"`
+	CreatedAt time.Time `gorm:"autoCreateTime"` // Automatically updates on any change
+	UpdatedAt time.Time `gorm:"autoUpdateTime"` // Automatically updates on any change
 }
 
 type LoginRequest struct {
-	UserName string `json:"userName"`
-	EmailID  string `json:"emailId"`
-	Password string `json:"password" binding:"required"`
+	UserName string
+	EmailID  string
+	Password string `binding:"required"`
 }
 
 func (c *User) TableName() string {
