@@ -20,6 +20,7 @@ type User struct {
 	UserName  string `binding:"required" gorm:"size:100;unique"`
 	EmailID   string `binding:"required,email" gorm:"size:100;unique"`
 	Password  string
+	Status    string    `gorm:"default:'active'"`
 	Role      string    `gorm:"default:'user'"`
 	CreatedAt time.Time `gorm:"autoCreateTime"` // Automatically updates on any change
 	UpdatedAt time.Time `gorm:"autoUpdateTime"` // Automatically updates on any change

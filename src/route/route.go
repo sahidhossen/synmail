@@ -10,25 +10,31 @@ import (
 	"github.com/sahidhossen/synmail/src/handler"
 	"github.com/sahidhossen/synmail/src/middleware"
 	"github.com/sahidhossen/synmail/src/migrations"
+	"github.com/sahidhossen/synmail/src/scheduler"
 	"github.com/sahidhossen/synmail/src/services"
 )
 
 func Router(r *gin.RouterGroup, ctx context.Context, cfg *config.Config) {
 	db := config.ConnectDB(cfg.DatabaseConnectionString)
-
-	migrations.Migrate(db)
+	migrations.Migrate(db) // Run database migration [later will move to commandline]
 
 	service := services.SynMailServices{DB: db}
-	emailService, err := email.NewEmailService(email.SMTP, cfg)
 
-	if err != nil {
+	//Initiate email service with selected provide [e.g: SMTP | Sendgrid | Mailgun]
+	emailService, err := email.NewEmailService(email.SMTP, cfg)
+	if err != nil || emailService == nil {
 		log.Err(err).Msg("Email service error!")
 	}
 
+	// Initialize Worker Pool and start scheduler
+	scheduler := scheduler.NewScheduler(cfg, emailService, &service)
+	go scheduler.StartCampaignScheduler()
+
+	// Create middleware with config
 	middleware := middleware.CreateMiddleware(cfg)
 
-	ginHandler := handler.CreateHandler(cfg, &emailService, &service)
-	r.GET("/ping", ginHandler.Ping)
+	ginHandler := handler.CreateHandler(cfg, emailService, &service)
+	r.GET("/ping", ginHandler.Ping) //Test server
 
 	userApi := r.Group("/user")
 	userApi.POST("/register", ginHandler.RegisterUser)

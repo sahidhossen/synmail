@@ -1,6 +1,10 @@
 package services
 
-import "github.com/sahidhossen/synmail/src/models"
+import (
+	"time"
+
+	"github.com/sahidhossen/synmail/src/models"
+)
 
 func (s *SynMailServices) CreateCampaign(campaign *models.Campaign) (*models.Campaign, error) {
 	if err := s.DB.Create(&campaign).Error; err != nil {
@@ -37,4 +41,13 @@ func (s *SynMailServices) UpdateCampaign(id uint, reqCampaign *models.UpdateCamp
 		return err
 	}
 	return nil
+}
+
+func (s *SynMailServices) GetScheduledCampaign() ([]models.Campaign, error) {
+	var campaigns []models.Campaign
+	if err := s.DB.Model(&models.Campaign{}).Select("campaigns.*").Joins("INNER JOIN users ON campaigns.scheduled_at <= ? AND users.id = campaigns.user_id AND users.status = ? AND campaigns.status = ?", time.Now(), "active", models.SCHEDULED).Scan(&campaigns).Error; err != nil {
+		return nil, err
+	}
+	return campaigns, nil
+
 }

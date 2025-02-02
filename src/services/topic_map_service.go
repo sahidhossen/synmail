@@ -17,6 +17,14 @@ func (s *SynMailServices) GetSubscribeTopicMapByID(id uint) (*models.SubscribeTo
 	return &subscribeTopicMap, nil
 }
 
+func (s *SynMailServices) GetSubscribeTopicMapByTopic(topicID, subscriberID uint) (*models.SubscribeTopicMap, error) {
+	var subscribeTopicMap models.SubscribeTopicMap
+	if err := s.DB.Where("topic_id = ? AND subscribe_id = ?", topicID, subscriberID).First(&subscribeTopicMap).Error; err != nil {
+		return nil, err
+	}
+	return &subscribeTopicMap, nil
+}
+
 func (s *SynMailServices) DeleteSubscribeTopicMapByID(id uint) error {
 	if err := s.DB.Delete(&models.SubscribeTopicMap{}, id).Error; err != nil {
 		return err

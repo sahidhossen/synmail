@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/rs/zerolog/log"
 	"github.com/sahidhossen/synmail/src/models"
+	"gorm.io/gorm"
 )
 
 func (h *GinHandler) CreateTopicMap(c *gin.Context) {
@@ -16,6 +18,19 @@ func (h *GinHandler) CreateTopicMap(c *gin.Context) {
 	if err := c.Bind(topicMap); err != nil {
 		log.Err(err).Msg("Required field")
 		ResponseWithError(c, http.StatusBadRequest, "Required field missing!")
+		return
+	}
+	existingMap, err := h.DBService.GetSubscribeTopicMapByTopic(topicMap.TopicID, topicMap.SubscribeID)
+	if err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Err(err).Msg("Topic map query error")
+			ResponseWithError(c, http.StatusBadRequest, "Topic map query error!")
+			return
+		}
+	}
+	if existingMap != nil {
+		log.Err(err).Msg("Duplicate entry")
+		ResponseWithError(c, http.StatusBadRequest, "Duplicate entry!")
 		return
 	}
 

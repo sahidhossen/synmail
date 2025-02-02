@@ -19,7 +19,8 @@ func (h *GinHandler) CreateTemplate(c *gin.Context) {
 		ResponseWithError(c, http.StatusBadRequest, "Required field missing!")
 		return
 	}
-
+	header := middleware.GetAuth(c)
+	template.UserID = header.UserID
 	result, err := h.DBService.CreateTemplate(template)
 	if err != nil {
 		log.Err(err).Msg("Template create error")

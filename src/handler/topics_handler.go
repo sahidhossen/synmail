@@ -19,7 +19,8 @@ func (h *GinHandler) CreateTopics(c *gin.Context) {
 		ResponseWithError(c, http.StatusBadRequest, "Required field missing!")
 		return
 	}
-
+	header := middleware.GetAuth(c)
+	topic.UserID = header.UserID
 	result, err := h.DBService.CreateTopic(topic)
 	if err != nil {
 		log.Err(err).Msg("Topic create error")

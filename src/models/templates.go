@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"time"
 
 	"gorm.io/gorm"
@@ -13,9 +14,10 @@ type Template struct {
 	Name      string
 	Subject   string `json:"subject" binding:"required"`
 	Content   string
-	Status    string    `gorm:"default:publish"` // draft / publish
-	CreatedAt time.Time `gorm:"autoCreateTime"`  // Automatically updates on any change
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`  // Automatically updates on any change
+	Metadata  json.RawMessage `gorm:"type:jsonb"`
+	Status    string          `gorm:"default:publish"` // draft / publish
+	CreatedAt time.Time       `gorm:"autoCreateTime"`  // Automatically updates on any change
+	UpdatedAt time.Time       `gorm:"autoUpdateTime"`  // Automatically updates on any change
 }
 
 type UpdateTemplate struct {

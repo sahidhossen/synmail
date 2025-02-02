@@ -19,7 +19,7 @@ func (s *SynMailServices) GetTemplateByID(id uint) (*models.Template, error) {
 
 func (s *SynMailServices) GetTemplates(userID uint) ([]*models.Template, error) {
 	var templates []*models.Template
-	if err := s.DB.Where("user_id = ?", userID).First(&templates).Error; err != nil {
+	if err := s.DB.Where("user_id = ?", userID).Find(&templates).Error; err != nil {
 		return nil, err
 	}
 	return templates, nil

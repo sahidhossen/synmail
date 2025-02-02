@@ -45,3 +45,15 @@ func (s *SynMailServices) UpdateSubscribe(id uint, reqFields *models.UpdateSubsc
 	}
 	return nil
 }
+
+func (s *SynMailServices) GetSubscribersByTopicId(topicID uint) ([]models.SubscriberSchedulerData, error) {
+	var results []models.SubscriberSchedulerData
+	query := `SELECT subs.id, subs.email FROM subscribe_topic_map as map 
+			LEFT JOIN subscribers as subs ON map.subscribe_id = subs.id 
+			WHERE map.topic_id = ? AND subs.status = ?`
+
+	if err := s.DB.Raw(query, topicID, models.SUBSCRIBED).Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	return results, nil
+}

@@ -12,9 +12,7 @@ import (
 )
 
 func (h *GinHandler) CreateCampaign(c *gin.Context) {
-	campaign := &models.Campaign{
-		UserID: 0,
-	}
+	campaign := &models.Campaign{}
 
 	if err := c.Bind(campaign); err != nil {
 		log.Err(err).Msg("Required field")

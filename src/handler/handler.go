@@ -11,11 +11,11 @@ import (
 
 type GinHandler struct {
 	*config.Config
-	EmailService *email.EmailService
+	EmailService email.EmailService
 	DBService    *services.SynMailServices
 }
 
-func CreateHandler(cfg *config.Config, emailClient *email.EmailService, service *services.SynMailServices) *GinHandler {
+func CreateHandler(cfg *config.Config, emailClient email.EmailService, service *services.SynMailServices) *GinHandler {
 	return &GinHandler{Config: cfg, EmailService: emailClient, DBService: service}
 }
 

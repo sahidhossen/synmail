@@ -51,6 +51,11 @@ type UpdateSubscriber struct {
 	Status    SubStatus `gorm:"type:varchar(20);default:'subscribed'"`
 }
 
+type SubscriberSchedulerData struct {
+	ID    uint
+	Email string
+}
+
 func (c *Subscriber) TableName() string {
 	return "subscribers"
 }
