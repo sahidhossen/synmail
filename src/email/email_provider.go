@@ -12,6 +12,7 @@ const (
 	SMTP     ProviderType = "smtp"
 	SendGrid ProviderType = "sendgrid"
 	Mailgun  ProviderType = "mailgun"
+	SES      ProviderType = "ses"
 )
 
 func NewEmailService(provider ProviderType, cfg *config.Config) (EmailService, error) {
@@ -28,6 +29,8 @@ func NewEmailService(provider ProviderType, cfg *config.Config) (EmailService, e
 		return &SendGridService{APIKey: cfg.MailAPIKey, FromEmail: cfg.MailFrom}, nil
 	case Mailgun:
 		return &MailgunService{Domain: cfg.MailGunDomain, APIKey: cfg.MailAPIKey, FromEmail: cfg.MailFrom}, nil
+	case SES:
+		return &SESService{Region: cfg.AWSRegion}, nil
 	default:
 		return nil, errors.New("unsupported email provider")
 	}

@@ -23,6 +23,7 @@ type Config struct {
 	MailFromName             string `envconfig:"MAIL_FROM_NAME" required:"true"`
 	MailAPIKey               string `envconfig:"MAIL_API_KEY"`
 	MailGunDomain            string `envconfig:"MAIL_GUN_DOMAIN"`
+	AWSRegion                string `envconfig:"MAIL_AWS_REGION"`
 }
 
 func LoadConfig() (*Config, error) {
